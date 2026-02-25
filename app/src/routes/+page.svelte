@@ -228,7 +228,7 @@
 					<span
 						>I am based in
 						<Stylish banner="/images/auto.gif">India</Stylish>
-						and also an graduate in</span
+						and also a graduate in</span
 					>
 					<Stylish banner="/images/arduino.gif"
 						>Electronics & Communications Engineering.</Stylish
