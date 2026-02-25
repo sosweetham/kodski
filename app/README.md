@@ -36,3 +36,15 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+## Deploying to Vercel
+
+This project is configured for Vercel deployment. The SvelteKit app uses `adapter-auto`, which automatically selects the Vercel adapter when deployed on Vercel.
+
+**If this repo has the app in an `app/` subdirectory** (monorepo layout), configure Vercel:
+
+1. Import the project in the [Vercel dashboard](https://vercel.com/new)
+2. In **Project Settings → General → Root Directory**, set `app`
+3. Deploy
+
+Build and output are handled automatically by Vercel's SvelteKit integration.
