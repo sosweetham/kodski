@@ -31,7 +31,7 @@ export abstract class Human {
 import { Human } from './species'
 const genericDetails: Omit<Human, "nick"|"social"|"interests"> = {
     name:'Ham', 
-    age:'20', 
+    age:'22', 
     location:'India', 
     gender: true
   }
@@ -43,8 +43,7 @@ import genericDetails from './me.private'
 class Ham extends Human {
   nick = 'Ham'
   social = {
-    discord: 'TooMuchHam',
-    guilded: 'https://www.guilded.gg/u/sosweetham'
+    discord: 'SoSweetHam',
   }
   interests = ['Programming', 'Gaming', 'Anime'] // :gigachad:
   constructor(proDetails: Omit<Human, "nick"|"social"|"interests">) {

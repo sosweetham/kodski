@@ -34,7 +34,7 @@
   }
   const scaleY = tweened(0, {duration: 2000, easing: quadInOut})
 	onMount(async () => {
-		contributions = await (await fetch('/api/v1/ghStats/sohamjaiswal')).json();
+		contributions = await (await fetch('/api/v1/ghStats/sosweetham')).json();
     $scaleY = 1
 	});
 </script>

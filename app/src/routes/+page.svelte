@@ -4,8 +4,9 @@
 	import Tech from '$lib/components/ThreeD/Tech/Tech.svelte';
 	import { modeCurrent } from '@skeletonlabs/skeleton';
 	import { memeBanners, technologyBanners, hiBanners, cannonBanners } from './data';
+	import { storeFooterVisible } from '$lib/stores/stores';
 	import anime from 'animejs';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import GhSkyLine from '$lib/components/ThreeD/GHSkyLine/GHSkyLine.svelte';
 	$: otherStuff = [
 		`AlpineJS-${$modeCurrent ? 'Light' : 'Dark'}`,
@@ -100,8 +101,27 @@
 		technologyBanners[Math.floor(Math.random() * technologyBanners.length)];
 
 	let iconsContainer: HTMLDivElement;
+	let scrollContainer: HTMLDivElement;
+	let showScrollIndicator = true;
 
 	let handleResize = () => {};
+	let lastScrollTop = 0;
+	const handleScroll = () => {
+		if (!scrollContainer) return;
+		const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+		const atEnd = scrollTop + clientHeight >= scrollHeight - 10;
+		showScrollIndicator = !atEnd;
+
+		// Footer: show when near bottom (150px threshold), hide as soon as user scrolls up
+		const nearBottom = scrollTop + clientHeight >= scrollHeight - 150;
+		const scrollingUp = scrollTop < lastScrollTop;
+		lastScrollTop = scrollTop;
+		if (scrollingUp || !nearBottom) {
+			storeFooterVisible.set(false);
+		} else {
+			storeFooterVisible.set(true);
+		}
+	};
 	let createGrid = () => {};
 	let handleTileClick = (index: number, tile: HTMLDivElement) => {};
 
@@ -122,7 +142,8 @@
 		});
 	};
 
-	onMount(() => {
+	onMount(async () => {
+		storeFooterVisible.set(false);
 		let columns = 0;
 		let rows = 0;
 		let count = -1;
@@ -154,16 +175,12 @@
 			});
 		};
 		createGrid = () => {
+			if (!iconsContainer) return;
 			iconsContainer.innerHTML = '';
 			const minTiles = otherStuff.length;
-			const icoWidth = iconsContainer.offsetWidth;
-			columns = Math.floor(icoWidth / 100);
-			rows = 0;
-			if (columns >= 1) {
-				rows = Math.ceil(minTiles / columns);
-			} else {
-				rows = 0;
-			}
+			const icoWidth = iconsContainer.offsetWidth || iconsContainer.parentElement?.clientWidth || 800;
+			columns = Math.max(1, Math.floor(icoWidth / 100));
+			rows = Math.ceil(minTiles / columns);
 			iconsContainer.style.setProperty('--columns', `${columns}`);
 			iconsContainer.style.setProperty('--rows', `${rows}`);
 			createTiles(columns * rows);
@@ -172,51 +189,64 @@
 			createGrid();
 		};
 		createGrid();
+		await tick();
+		handleScroll();
+	});
+
+	onDestroy(() => {
+		storeFooterVisible.set(true);
 	});
 </script>
 
-<div class="container h-full mx-auto snap-y snap-mandatory overflow-y-scroll hide-scrollbar">
-	<div class="lg:flex snap-start items-center">
-		<div class=" w-full lg:w-1/2">
-			<h1 class="h1 gotham-ultra text-8xl">
-				Hi
-				<img
-					src={`/emojis/${randomHi()}`}
-					alt="Hi! banner"
-					loading="lazy"
-					class="inline aspect-square h-20"
-				/>
-			</h1>
-			<h1>
-				<span class="h1 gotham-ultra text-8xl" style="margin-right:1rem">I'm </span>
-				<Stylish class="h1 gotham-ultra text-8xl" banner={`/images/pfps/${randomBanner()}`}>Ham!</Stylish>
-			</h1>
-			<div class="text-2xl relative">
-				<span>I am an </span>
-				<Stylish  style="margin-right: 0.025em" banner="/images/dev.gif"
-					>Independent Developer.</Stylish
-				>
-				<span
-					>I am based in
-					<Stylish  banner="/images/auto.gif">India</Stylish>
-					and also an undergrad student in</span
-				>
-				<Stylish  banner="/images/arduino.gif"
-					>Electronics & Communications Engineering.</Stylish
-				>
+<div
+	bind:this={scrollContainer}
+	on:scroll={handleScroll}
+	class="container mx-auto snap-y snap-mandatory overflow-y-auto overflow-x-hidden hide-scrollbar scroll-smooth"
+	style="height: calc(100dvh - 6rem)"
+>
+	<section class="min-h-[calc(100dvh-6rem)] flex flex-col justify-center py-16 lg:py-24 snap-start">
+		<div class="lg:flex items-center">
+			<div class="w-full lg:w-1/2">
+				<h1 class="h1 gotham-ultra text-8xl">
+					Hi
+					<img
+						src={`/emojis/${randomHi()}`}
+						alt="Hi! banner"
+						loading="lazy"
+						class="inline aspect-square h-20"
+					/>
+				</h1>
+				<h1>
+					<span class="h1 gotham-ultra text-8xl" style="margin-right:1rem">I'm </span>
+					<Stylish class="h1 gotham-ultra text-8xl" banner={`/images/pfps/${randomBanner()}`}>Ham!</Stylish>
+				</h1>
+				<div class="text-2xl relative">
+					<span>I am an </span>
+					<Stylish style="margin-right: 0.025em" banner="/images/dev.gif"
+						>Independent Developer.</Stylish
+					>
+					<span
+						>I am based in
+						<Stylish banner="/images/auto.gif">India</Stylish>
+						and also an graduate in</span
+					>
+					<Stylish banner="/images/arduino.gif"
+						>Electronics & Communications Engineering.</Stylish
+					>
+				</div>
+				<div class="prose text-inherit mb-20">
+					<svelte:component this={data.content} />
+				</div>
 			</div>
-			<div class="prose text-inherit mb-20">
-				<svelte:component this={data.content} />
+			<div class="lg:w-1/2 h-full hidden lg:flex justify-center flex-col gap-4">
+				<GhSkyLine />
+				<h1 class="h1 text-center w-full">
+					GitHub SkyLine
+				</h1>
 			</div>
 		</div>
-		<!-- <div class="lg:w-1/2 h-full hidden lg:flex justify-center flex-col gap-4">
-			<GhSkyLine />
-			<h1 class="h1 text-center w-full">
-				GutHib SkyLine <br />(Filler cuz it looks cool)
-			</h1>
-		</div> -->
-	</div>
-	<div class="flex flex-wrap lg:h-screen lg:pt-24 snap-start">
+	</section>
+	<section class="min-h-[calc(100dvh-6rem)] flex flex-wrap lg:flex-nowrap gap-12 lg:gap-16 py-16 lg:py-24 snap-start items-center">
 		<div class="w-full lg:w-1/2 lg:h-full">
 			<div class="flex gap-2 flex-wrap text-center justify-center md:justify-start">
 				<Stylish
@@ -256,9 +286,9 @@
 				<Tech class="md:w-1/3 sm:w-1/2" model="/models/TSLogo.glb" />
 			</div>
 		</div>
-	</div>
-	<div class="w-full snap-start">
-		<div class="flex flex-col justify-center align-center">
+	</section>
+	<section class="min-h-[calc(100dvh-6rem)] w-full snap-start flex flex-col justify-center py-16 lg:py-24">
+		<div class="flex flex-col justify-center items-center w-full">
 			<div class="flex gap-2 justify-center w-full flex-wrap text-center">
 				<span class="gotham-ultra text-5xl">Some other </span>
 				<Stylish
@@ -269,10 +299,23 @@
 				</Stylish>
 				<span class="gotham-ultra text-5xl"> I have used... </span>
 			</div>
-			<div class="flex relative m-10 mt-5 custom-stagger lg:mb-52" bind:this={iconsContainer} />
+			<div class="flex relative w-full mt-8 mb-12 px-4 custom-stagger" bind:this={iconsContainer} />
 		</div>
-	</div>
+	</section>
 </div>
+
+{#if showScrollIndicator}
+	<div
+		class="fixed bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-surface-500-600 dark:text-surface-400-500 animate-bounce pointer-events-none z-50"
+		aria-hidden="true"
+	>
+		<span class="text-xs font-medium">Scroll for more</span>
+		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M12 5v14M19 12l-7 7-7-7" />
+		</svg>
+	</div>
+{/if}
+
 <svelte:window on:resize={handleResize} />
 
 <style lang="postcss">

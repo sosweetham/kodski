@@ -9,8 +9,8 @@ export type Post = {
 }
 
 export type Contributions = Array<{
-  count: number,
-  day: string,
-  dat: string,
-  level: number
-} | null>[]
+	count: number;
+	day: string;
+	date: string;
+	level: number;
+} | null>[];

@@ -1,6 +1,7 @@
 import { visit } from 'unist-util-visit';
 import { h } from "hastscript";
 import { findAndReplace } from "hast-util-find-and-replace";
+import { emojisMap } from './src/lib/emojis/index.ts';
 
 import remarkGfm from 'remark-gfm';
 import remarkUnwrapImages from 'remark-unwrap-images';
@@ -51,6 +52,7 @@ var defaultOptions = {
 var rehypeCustomEmoji = function (options) {
 	var opts = __assign(__assign({}, defaultOptions), options);
 	var replace_maps = {};
+	var emojiCodes = Object.keys(opts.emojis);
 	Object.entries(opts.emojis).forEach(function (_a) {
 			var emoji_code = _a[0], path = _a[1];
 			var emoji = ":".concat(emoji_code, ":");
@@ -59,14 +61,27 @@ var rehypeCustomEmoji = function (options) {
 					className: opts.className,
 					alt: opts.alt ? emoji : undefined,
 			};
-			var inlineProperties = {...commonProperties, style: "display: inline; aspect-ratio: 1; width: 1.75em; margin: 0"};
+			var inlineProperties = {...commonProperties, style: "display: inline; aspect-ratio: 1; width: 1.75em; margin: 0 0.2em"};
 			replace_maps["\n".concat(emoji)] = h("img", commonProperties);
 			replace_maps[emoji] = h("img", inlineProperties);
 	});
+	// :$random$: outputs a placeholder; client hydrates with random emoji on each load
+	var placeholderStyle = "display: inline-block; width: 1.75em; aspect-ratio: 1; margin: 0 0.2em;";
+	var randomPlaceholderHtml = '<span class="random-emoji" style="' + placeholderStyle + '"></span>';
+	replace_maps[":$random$:"] = replace_maps["\n:$random$:"] = function () {
+		return h("span", { className: ["random-emoji"], style: placeholderStyle });
+	};
 	return function (tree) {
 			visit(tree, ["raw", "element", "text"], function (node) {
 				switch (node.type) {
 					case "raw":
+						// replace :$random$: with placeholder; client hydrates with random emoji on load
+						node.value = node.value.replace(/\n:\$random\$:/g, function () {
+							return randomPlaceholderHtml;
+						});
+						node.value = node.value.replace(/:\$random\$:/g, function () {
+							return randomPlaceholderHtml;
+						});
 						// replace emoji strings taking values from replace_maps
 						node.value = node.value.replace(/(:[a-zA-Z0-9_+-]+:|\n:[a-zA-Z0-9_+-]+:)/g, function (match) {
 							// return replace_maps[match] || match;
@@ -78,7 +93,9 @@ var rehypeCustomEmoji = function (options) {
 						break
 					case "element":
 						var _a;
-						if (((_a = node.properties) === null || _a === void 0 ? void 0 : _a.dataEmoji) === undefined && node.tagName !== "p" && node.tagName !== "span") {
+						// Random emoji only in text bodies (p, span), not headings
+						var textContainers = ["p", "span"];
+						if (((_a = node.properties) === null || _a === void 0 ? void 0 : _a.dataEmoji) === undefined && !textContainers.includes(node.tagName)) {
 							return;
 						}
 						findAndReplace(node, replace_maps, { ignore: opts.ignore });
@@ -102,12 +119,7 @@ export const mdsvexOptions = {
 	rehypePlugins: [
 		rehypeKatex,
 		[rehypeCustomEmoji, {
-			emojis: {
-				earperk: '/emojis/earperk.gif',
-				gigachad: '/emojis/gigachad.gif',
-				aqualove: '/emojis/aqualove.png',
-				zerotwo_hype: '/emojis/zerotwo_hype.gif',
-			},
+			emojis: emojisMap,
 			className: 'custom-emoji'
 		}],
 		rehypeAccessibleEmojis,

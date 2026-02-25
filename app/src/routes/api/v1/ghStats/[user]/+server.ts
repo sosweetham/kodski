@@ -1,83 +1,75 @@
-import { HTMLTableRowElement, parseHTML } from 'linkedom';
-import type { RouteParams } from './pastYear/$types';
+import { parseHTML } from 'linkedom';
 import { json } from '@sveltejs/kit';
 import type { Contributions } from '$lib/types';
 
-export const GET = async ({ params , setHeaders}) => {
-  setHeaders({
-    'Cache-Control': `public, s-maxage=${60*60*24}`,
-    'Access-Control-Allow-Origin': '*'
-  });
-	const contributions = await getContributions(params);
-	return json(parseContributions(contributions));
+export const GET = async ({ params, setHeaders }) => {
+	setHeaders({
+		'Cache-Control': `public, s-maxage=${60 * 60 * 24}`,
+		'Access-Control-Allow-Origin': '*'
+	});
+	const { html, from, to } = await getContributions(params);
+	return json(parseContributions(html, from, to));
 };
-function getPreviousYearDate() {
-	const today = new Date();
-	const previousYear = today.getFullYear() -1;
-	const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
-	const day = today.getDate().toString().padStart(2, '0');
-
-	const previousYearDate = `${previousYear}-${month}-${day}`;
-	return previousYearDate;
+function getContributionDateRange() {
+	const to = new Date();
+	const from = new Date(to);
+	from.setFullYear(from.getFullYear() - 1);
+	return {
+		from: from.toISOString().slice(0, 10),
+		to: to.toISOString().slice(0, 10)
+	};
 }
-function getCurrentDate() {
-	const today = new Date();
-	const year = today.getFullYear();
-	const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
-	const day = today.getDate().toString().padStart(2, '0');
-
-	const formattedDate = `${year}-${month}-${day}`;
-	return formattedDate;
-}
-const getContributions = async ({ user }: RouteParams) => {
-	const res = await fetch(
-		`https://github.com/users/${user}/contributions?from=${getPreviousYearDate()}&to=${getCurrentDate()}`
-	);
+const getContributions = async ({ user }: { user: string }) => {
+	const { from, to } = getContributionDateRange();
+	const url = `https://github.com/users/${user}/contributions?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+	const res = await fetch(url);
 	if (!res.ok) {
 		throw new Error(`${res.status}:Failed to fetch contributions for ${user}`);
 	}
 	const text = await res.text();
-	return text;
+	return { html: text, from, to };
 };
-const parseContributions = (html: string) => {
+/** Map GitHub contribution level (0–4) to approximate count for bar height */
+const levelToCount = (level: number): number => {
+	if (level <= 0) return 0;
+	if (level === 1) return 3;
+	if (level === 2) return 10;
+	if (level === 3) return 20;
+	return 35;
+};
+
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
+
+const parseContributions = (html: string, from: string, to: string): Contributions => {
 	const { document } = parseHTML(html);
 	const rows = document.querySelectorAll('tbody > tr');
-	const contributions = [];
+	const contributions: Contributions = [];
 	let weekday = 0;
+
 	for (const row of rows) {
-		const days = row.querySelectorAll(
-			'td:not(.ContributionCalendar-label)'
-		) as unknown as HTMLTableRowElement[];
-		const currentRow = [];
-		for (const day of days) {
-			const data = day.innerText.split(' ');
-			if (data.length > 1) {
-				const contribution = {
-					count: data[0] === 'No' ? 0 : +data[0],
-					day:
-						weekday == 0
-							? 'Sunday'
-							: weekday == 1
-							? 'Monday'
-							: weekday == 2
-							? 'Tuesday'
-							: weekday == 3
-							? 'Wednesday'
-							: weekday == 4
-							? 'Thursday'
-							: weekday == 5
-							? 'Friday'
-							: 'Saturday',
-					date: day.dataset.date,
-					level: +day.dataset.level
-				};
-				currentRow.push(contribution);
+		const cells = row.querySelectorAll('td:not(.ContributionCalendar-label)');
+		const currentRow: (Contributions[number][number])[] = [];
+
+		for (const cell of cells) {
+			const date = cell.getAttribute('data-date');
+			const levelStr = cell.getAttribute('data-level');
+
+			if (date != null && levelStr != null && date >= from && date <= to) {
+				const level = parseInt(levelStr, 10) || 0;
+				currentRow.push({
+					count: levelToCount(level),
+					day: DAYS[weekday] ?? 'Saturday',
+					date,
+					level
+				});
 			} else {
 				currentRow.push(null);
 			}
 		}
+
 		contributions.push(currentRow);
 		weekday++;
 	}
-	return contributions as Contributions;
+
+	return contributions;
 };

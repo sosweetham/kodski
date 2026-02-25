@@ -8,24 +8,90 @@ categories:
 published: true
 ---
 
-# My Stuff! 
+# My Stuff!
 <span>
-I have been developing since high school and I'll take this opportunity to showcase some of the good ones among the sea of many :zerotwo_hype:
+I have been developing since high school and I'll take this opportunity to showcase some of the good ones among the sea of many :$random$:
 </span>
 
-## GPlace
-GPlace was my reddit.com/r/place reverse engineering project where I tried to recreate r/place in svleltekit. I linked it's auth with my existing cardboard project and managed to gain noticable user traction on Guilded.
+## Current Personal Project
 
-Viewable at: [GPlace.ink](https://gplace.ink), Source Code: [Github](https://github.com/sohamjaiswal/sveltekit-place)
+### SYR <span class="badge variant-filled-primary">2025</span>
+A self-hosted multi-tenant self-sovereign identity manager built with SvelteKit. :$random$: Manages cryptographic identities, posts, and federated activity across SYR instances. Powered by a pnpm workspace monorepo with Turborepo, SurrealDB, SeaweedFS (S3-compatible), ActivityPub, W3C VC 2.0, and Identity-Based Auth. Implements Self-Sovereign Identity with the did:syr DID method and Ed25519. :$random$:
 
-## Cardboard
-Cardboard is my rfc6749/OAuth2.0 compliant third party openid provider, currently supporting the Guilded platform, it comes with a fully functional admin panel and a user dashboard. It comes with wrapper libs for it's API in NodeJS, and NextAuthJS. It also managed to gain a popular Python wrapper from it's active developer community.
+Repo: [Github](https://github.com/syr-is/syr)
 
-Viewable at: [Cardboard.ink](https://cardboard.ink), Repos: [Github](https://github.com/cardboard-ink/cardboard)
+---
+
+## Noteworthy Projects
+
+### Kodski <span class="badge variant-filled-primary">2024</span>
+This very site! :$random$: Built with SvelteKit, Skeleton UI, Threlte for 3D, and mdsvex for content. :$random$:
+
+Source: [Github](https://github.com/sosweetham/kodski)
+
+### tauri-plugin-crypto-hw <span class="badge variant-filled-primary">2025</span>
+Android/iOS StrongBox and Secure Enclave bindings and wrapper for Tauri. :$random$: Enables hardware-backed cryptography in cross-platform desktop and mobile apps. :$random$:
+
+Repo: [Github](https://github.com/auvoid/tauri-plugin-crypto-hw)
+
+### tauri-plugin-torch <span class="badge variant-filled-primary">2025</span>
+A Tauri plugin that enables use of the device torch (flashlight) on Android and iOS. :$random$:
+
+Repo: [Github](https://github.com/auvoid/tauri-plugin-torch)
+
+### yourname-dots <span class="badge variant-filled-primary">2021–2022</span>
+i3WM rice with a Kimi no Nawa theme, nordish aesthetic. :$random$: A dotfiles configuration for a clean, themed Linux desktop. :$random$:
+
+Repo: [Github](https://github.com/sohamjaiswal/yourname-dots)
+
+---
+
+## Contributions
+
+Open source contributions and collaborations. :$random$:
+
+- **[better-auth](https://github.com/better-auth/better-auth/pull/2083)** <span class="badge variant-filled-surface">2025</span> — Fix forget password flow
+- **[seaweedfs](https://github.com/seaweedfs/seaweedfs/pull/8052)** <span class="badge variant-filled-surface">2026</span> — Fix S3 API wildcard matching for IAM-compliant resource policies
+- **[tauri-apps/plugins-workspace](https://github.com/tauri-apps/plugins-workspace/pull/2870)** <span class="badge variant-filled-surface">2025</span> — Fix mobile deeplinks (custom URL schemes, AppLink/UniversalLink)
+- **[MetaState Prototype](https://github.com/MetaState-Prototype-Project/prototype)** <span class="badge variant-filled-surface">2026</span> — W3DS and MetaState prototype contributions
+
+---
+
+## Legacy
+These projects were built for Guilded and are no longer available after Guilded's shutdown. :paimonshock: Links to live sites are struck (cuz they dont work anymore BUT, GitHubs are still linked lol). :confuseddog:
+### cardboard.js <span class="badge variant-filled-surface">2023–2024</span>
+JS/TS wrapper for the CardBoard API. :$random$: Provided a clean interface for integrating with the CardBoard OAuth ecosystem. :$random$:
+
+NPM: [npm.js](https://www.npmjs.com/package/cardboard.js), Repo: [Github](https://github.com/cardboard-ink/cardboard.js)
+
+### sveltekit-place <span class="badge variant-filled-surface">2023–2024</span>
+A r/place clone made in SvelteKit with Cardboard OAuth integration. :$random$: Collaborative pixel canvas experience. :$random$:
+
+Repo: [Github](https://github.com/sohamjaiswal/sveltekit-place)
+
+### ghorde <span class="badge variant-filled-surface">2023</span>
+Guilded fun bot with FREE Image Generation using the Horde API. :$random$:
+
+Repo: [Github](https://github.com/ghorde/ghorde)
+
+### Grimoire <span class="badge variant-filled-surface">2024</span>
+A handy spell book of unlimited secrets for lands unencountered. :$random$: A Python project for managing and discovering content. :$random$:
+
+Repo: [Github](https://github.com/sosweetham/Grimoire)
+
+### GPlace <span class="badge variant-filled-surface">2023–2024</span>
+GPlace was my reddit.com/r/place reverse engineering project where I tried to recreate r/place in SvelteKit. :$random$: I linked its auth with my existing cardboard project and managed to gain noticeable user traction on Guilded. :$random$:
+
+~~Viewable at: [GPlace.ink](https://gplace.ink)~~, Source Code: [Github](https://github.com/sohamjaiswal/sveltekit-place)
+
+### Cardboard <span class="badge variant-filled-surface">2023–2024</span>
+Cardboard was my rfc6749/OAuth2.0 compliant third party OpenID provider for the Guilded platform, with a fully functional admin panel and user dashboard. :$random$: It had wrapper libs for NodeJS and NextAuthJS, plus a popular Python wrapper from its developer community. :$random$:
+
+~~Viewable at: [Cardboard.ink](https://cardboard.ink)~~, Repos: [Github](https://github.com/cardboard-ink/cardboard)
 
 NPM Package: [npm.js](https://www.npmjs.com/package/cardboard.js)
 
-## GRASS
-My first app in tauri, and introduction to rust. GRASS is a simple app that allows you to set your Guilded **✨RICH✨** status to the song you're currently listening to on spotify. It's a simple app that I made for myself, but it's open source and you can use it too!
+### GRASS <span class="badge variant-filled-surface">2023</span>
+My first app in Tauri and introduction to Rust. :$random$: GRASS allowed you to set your Guilded **✨RICH✨** status to the song you were listening to on Spotify. Open source and made for myself, but available for others too. :$random$:
 
 Repo: [Github](https://github.com/sohamjaiswal/grass)

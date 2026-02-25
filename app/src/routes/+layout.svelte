@@ -9,6 +9,8 @@
 	import { storeTheme } from '$lib/stores/stores';
 	import { themes } from '$lib/config';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { page } from '$app/stores';
+	import { storeFooterVisible } from '$lib/stores/stores';
 	export let data
 	initializeStores();
 	const setTheme: SubmitFunction = ({ formData }) => {
@@ -31,7 +33,9 @@
 			<div class="flex flex-col items-center w-full gap-4">
 				<a class="btn btn-sm variant-ghost-surface" href="/" rel="noreferrer">🏡 Home </a>
 				<a class="btn btn-sm variant-ghost-surface" href="/stuff" rel="noreferrer">🪀 Stuff </a>
-				<a class="btn btn-sm variant-ghost-surface" href="/blog" rel="noreferrer">📜 Blog </a>
+				<a class="btn btn-sm variant-ghost-surface" href="/achievements" rel="noreferrer">🏆 Achievements </a>
+				<a class="btn btn-sm variant-ghost-surface" href="/publications" rel="noreferrer">📄 Publications </a>
+				<a class="btn btn-sm variant-ghost-surface" href="/blog" rel="noreferrer">📜 Blog</a>
 			</div>
 		</div>
 			<div class="flex flex-col gap-4 items-center">
@@ -91,15 +95,13 @@
 		</Transition>
 	</div>
 	<svelte:fragment slot="pageFooter">
-		<div class="container mx-auto mb-2">
-			<hr class="mb-2" />
-			<!-- <div class="flex justify-center text-center align-center">
-				Made with ❤️ by Soham<br />
-				All project files available on GitHub
-			</div> -->
-			<div class="flex justify-center text-center align-center">
-				I enjoyed making this, I hope you enjoyed reading it :D
+		{#if $page.pathname !== '/' || $storeFooterVisible}
+			<div class="container mx-auto mb-2">
+				<hr class="mb-2" />
+				<div class="flex justify-center text-center align-center">
+					I enjoyed making this, I hope you enjoyed reading it :D
+				</div>
 			</div>
-		</div>
+		{/if}
 	</svelte:fragment>
 </AppShell>
